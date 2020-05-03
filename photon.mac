@@ -1,1 +1,5 @@
-/run/beamOn 1000000
+/run/initialize
+/vis/modeling/trajectories/create/drawByCharge
+/vis/ogl/set/displayListLimit 10000
+
+/run/beamOn 1

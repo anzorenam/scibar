@@ -174,7 +174,7 @@ class SciCRTDetectorConstruction : public G4VUserDetectorConstruction
 
   private:
 
-     void ConstructFiber();
+     void ConstructFiber(G4double pEn[],G4double rMi[],G4double eMi[],G4double rMPPC[],G4double eMPPC[],G4int Ne);
      void UpdateGeometryParameters();
      SciCRTDetectorMessenger* fDetectorMessenger;
      G4Cache<SciCRTPhotonDetSD*> fmppcSD;
