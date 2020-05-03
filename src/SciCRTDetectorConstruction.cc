@@ -123,7 +123,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   std::ifstream data_file;
   data_file.open(filename);
   if(!data_file) {
-    printf("file open error \n");
+    G4cout << "File open error "<< G4endl;
   }
   else{
     for(int k=0;k<8;k++){

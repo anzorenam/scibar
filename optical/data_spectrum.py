@@ -21,7 +21,7 @@ qe=1.602176634
 c=0.299792458
 h=6.62607015
 Kconv=h*(1.0/qe)*c*(1e3)
-data=np.loadtxt('WLS_trans-raw.csv',skiprows=1,delimiter=',')
+data=np.loadtxt('scibar_emi-raw.csv',skiprows=1,delimiter=',')
 if conv==True:
   x=np.flip(Kconv/data[:,0])
   y=np.flip(data[:,1])
@@ -40,7 +40,7 @@ s=interp.Akima1DInterpolator(xs,ys)
 ys=s(xs)
 ys=(1.0/np.amax(ys))*ys
 print(Kconv/5.0,Kconv/1.96,np.shape(ys))
-#ys[ys<0]=0.0
+ys[ys<0]=0.0
 if w==True:
   f=open('scibar_optics.dat','a')
   np.savetxt(f,ys,fmt='%1.14f',newline=' ')

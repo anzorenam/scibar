@@ -26,6 +26,7 @@ SciCRTRunAction::SciCRTRunAction()
   analysisManager->CreateNtupleIColumn("evento");
   analysisManager->CreateNtupleDColumn("TotEdep");
   analysisManager->CreateNtupleIColumn("num_pmt");
+
   analysisManager->FinishNtuple();
 
   analysisManager->CreateNtuple("time", "time");

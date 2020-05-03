@@ -137,8 +137,38 @@ void SciCRTPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   char* long_ID=getenv("LONGZ");
   G4double longz=(float) atoi(G4String(long_ID));
 
+  G4int nbins=400;
+  G4double erand,ebin[400],penergy[400];
+  G4String filename="optical/emi_spectrum.dat";
+  std::ifstream data_file;
+  data_file.open(filename);
+  if(!data_file) {
+    G4cout << "File open error "<< G4endl;
+  }
+  else{
+    for(int j=0;j<400;j++){
+      data_file>>ebin[j];
+      data_file>>penergy[j];
+    }
+  }
+  data_file.close();
+  G4RandGeneral GenDist(penergy,nbins);
+  erand=1.0+(GenDist.shoot())*(5.0-1.0);
+  G4cout << "Energia: "<< erand << G4endl;
+  G4double x=2.0*G4UniformRand()-1.0;
+  G4double y=2.0*G4UniformRand()-1.0;
   G4double z=2.0*G4UniformRand()-1.0;
-  G4double randz;
+  G4double randx,randy,randz;
+  if(x>=0){
+    randx=1.0;
+  }else if(x<0){
+    randx=-1.0;
+  }
+  if(y>=0){
+    randy=1.0;
+  }else if(y<0){
+    randy=-1.0;
+  }
   if(z>=0){
     randz=1.0;
   }else if(z<0){
@@ -147,10 +177,10 @@ void SciCRTPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   G4ParticleTable* particleTable=G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* particle=particleTable->FindParticle("opticalphoton");
-  G4ThreeVector momentumDir=G4ThreeVector(0,0,randz);
+  G4ThreeVector momentumDir=G4ThreeVector(randx,randy,randz);
   G4ThreeVector par_position=G4ThreeVector(8.75*cm,-0.65*cm,longz*cm);
   fParticleGun->SetParticleDefinition(particle);
-  fParticleGun->SetParticleEnergy(2.91*eV);
+  fParticleGun->SetParticleEnergy(erand*eV);
   fParticleGun->SetParticlePosition(par_position);
   fParticleGun->SetParticleMomentumDirection(momentumDir);
   fParticleGun->GeneratePrimaryVertex(anEvent);
@@ -158,7 +188,7 @@ void SciCRTPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 void SciCRTPrimaryGeneratorAction::SetOptPhotonPolar()
 {
-  G4double angle = G4UniformRand() * 360.0*deg;
+  G4double angle=G4UniformRand()*360.0*deg;
   SetOptPhotonPolar(angle);
 }
 

@@ -95,6 +95,7 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
      if (n_hit!=0){
      analysisManager->FillNtupleIColumn(1,0,evento);
      analysisManager->FillNtupleIColumn(1,2,n_hit);
+
      G4cout << "Numero de evento: "<< evento << G4endl;
      G4double tiempo;
      for(int i=0; i<n_hit;i++){
