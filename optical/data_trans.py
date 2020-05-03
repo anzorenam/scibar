@@ -40,6 +40,7 @@ ws=np.arange(1.0,5.0,0.01)
 cs=interp.InterpolatedUnivariateSpline(w,z,k=1,ext=3)
 zs=cs(ws)
 wmin,wmax=np.amin(w),np.amax(w)
+zs[zs>4e4]=5e10
 test=np.logical_and(ws>=wmin,ws<=wmax)
 ys[test]=5e4
 
@@ -53,7 +54,7 @@ if write==True:
 
 if plot==True:
   fig,ax=plt.subplots(nrows=1,ncols=1)
-  ax.plot(xs,ys)
-  #ax.semilogy(ws,zs)
+  #ax.plot(xs,ys)
+  ax.semilogy(ws,zs)
   #plt.xlim(2.4,4.0)
   plt.show()
