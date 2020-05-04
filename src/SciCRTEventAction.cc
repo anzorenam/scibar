@@ -82,37 +82,39 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
   // Get the hit collections
   if (HCE)
   {
-     if(fMPPCCollID>=0) mppcHC=(SciCRTPhotonDetHitsCollection*)(HCE->GetHC(fMPPCCollID));
-	 //obtener el hit
-	 if(fScintCollID>=0)scintHC =(SciCRTScintHitsCollection*)(HCE->GetHC(fScintCollID));
+    if(fMPPCCollID>=0) mppcHC=(SciCRTPhotonDetHitsCollection*)(HCE->GetHC(fMPPCCollID));
+	  if(fScintCollID>=0) scintHC=(SciCRTScintHitsCollection*)(HCE->GetHC(fScintCollID));
   }
 
   G4int evento=evt->GetEventID();
+  G4double Kconv=6.62607015*(1.0/1.602176634)*0.299792458*(1e-3);
+  G4double energy=Kconv*(1.0/(evt->GetPrimaryVertex()->GetPrimary()->GetKineticEnergy()));
   // Get hit information about photons that reached the detector in this event
   if (mppcHC)
   {
 	 G4int n_hit = mppcHC->entries();
      if (n_hit!=0){
-     analysisManager->FillNtupleIColumn(1,0,evento);
-     analysisManager->FillNtupleIColumn(1,2,n_hit);
-
-     G4cout << "Numero de evento: "<< evento << G4endl;
-     G4double tiempo;
-     for(int i=0; i<n_hit;i++){
-		 tiempo=(*mppcHC)[i]->GetArrivalTime();
-     analysisManager->FillNtupleIColumn(2,0,evento);
-		 analysisManager->FillNtupleIColumn(2,1,i);
-		 analysisManager->FillNtupleDColumn(2,2,tiempo);
-		 analysisManager->AddNtupleRow(2);
+       analysisManager->FillNtupleIColumn(1,0,evento);
+       analysisManager->FillNtupleDColumn(1,1,energy);
+       analysisManager->FillNtupleIColumn(1,2,n_hit);
+       G4double tiempo;
+       for(int i=0; i<n_hit;i++){
+		     tiempo=(*mppcHC)[i]->GetArrivalTime();
+         analysisManager->FillNtupleIColumn(2,0,evento);
+		     analysisManager->FillNtupleIColumn(2,1,i);
+		     analysisManager->FillNtupleDColumn(2,2,tiempo);
+		     analysisManager->AddNtupleRow(2);
 		   }
 	   }
   }
 
-  if (fTotalEdep > 0.) {
-    G4double TotEdep=GetEdep();
-    analysisManager->FillNtupleDColumn(1,1,TotEdep);
-	  analysisManager->AddNtupleRow(1);
-  }
+//  if (fTotalEdep > 0.) {
+//    G4double TotEdep=Kconv*(1.0/GetEdep());
+//    analysisManager->FillNtupleIColumn(1,0,evento);
+//    analysisManager->FillNtupleDColumn(1,2,energy);
+//    analysisManager->FillNtupleDColumn(1,1,TotEdep);
+//	  analysisManager->AddNtupleRow(1);
+// }
 
 }
 

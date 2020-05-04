@@ -141,7 +141,8 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
         } else if(k==5){
           data_file>>pEn[j];
         } else if(k==6){
-          data_file>>eMPPC[j];
+          //data_file>>eMPPC[j];
+          eMPPC[j]=100.0;
         }
       }
     }
@@ -151,7 +152,6 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   for(int j=0;j<Ne;j++){
     eMPPC[j]*=0.01;
   }
-
 
   TiO2SurfaceProperty->AddProperty("REFLECTIVITY",pEn,refl_TiO2,Ne);
   TiO2SurfaceProperty->AddProperty("EFFICIENCY",pEn,effi_TiO2,Ne);
@@ -240,6 +240,7 @@ void SciCRTDetectorConstruction::ConstructFiber(G4double pEn[],G4double rMi[],G4
   //aqui se puede juagr un poco con la simulacion *****
   //DBL_MAX viene de una clase que proporciona cross sections y stopping powers
   //y nos ayuda a acceder a metodos
+  // http://www.sixiangguo.net/code/geant4/AppDevelop/ch05s07.html
 
   logicSciCRTfiber->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,0.01*ms));
   G4VPhysicalVolume* physiSciCRTfiber=new G4PVPlacement(0,G4ThreeVector(0.0,0.0,0.0),

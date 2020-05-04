@@ -26,28 +26,27 @@ G4ClassificationOfNewTrack
       SciCRTStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 {
   G4ParticleDefinition* particleType = aTrack->GetDefinition();
-
   // keep primary particle
   if (aTrack->GetParentID() == 0){
    return fUrgent;}
 
   if (particleType == G4OpticalPhoton::OpticalPhotonDefinition()) {
-    if  (aTrack->GetVolume()->GetName()== "SciCRTFiber" || aTrack->GetVolume()->GetName()== "Scintillator"){
-     // keep optical photon
-     fPhotonCounter++;
-     return fUrgent;}
-  } else {
-     // discard all other secondaries
-     // return fKill;
+    if(aTrack->GetParentID()>0){
+      //if(aTrack->GetVolume()->GetName()== "SciCRTFiber"){
+        fPhotonCounter++;
+        return fUrgent;
+    //  }
+    }
   }
+
   return fUrgent;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SciCRTStackingAction::NewStage() {
-   G4cout << "Numero de optical photons producidos en este evento: "
-          << fPhotonCounter << G4endl;
+//   G4cout << "Numero de optical photons producidos en este evento: "
+//          << fPhotonCounter << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
