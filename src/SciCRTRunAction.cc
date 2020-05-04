@@ -24,9 +24,9 @@ SciCRTRunAction::SciCRTRunAction()
   analysisManager->SetFirstNtupleId(1);
   analysisManager->CreateNtuple("edep","photons");
   analysisManager->CreateNtupleIColumn("evento");
-  analysisManager->CreateNtupleDColumn("TotEdep");
+  analysisManager->CreateNtupleDColumn("energy");
   analysisManager->CreateNtupleIColumn("num_pmt");
-
+  analysisManager->CreateNtupleIColumn("num_all");
   analysisManager->FinishNtuple();
 
   analysisManager->CreateNtuple("time", "time");

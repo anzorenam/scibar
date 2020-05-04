@@ -21,31 +21,28 @@
 #include <iomanip>
 
 // Purpose: Acumula informacion estadistica sobre hits en el PhotonDet
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 SciCRTEventAction::SciCRTEventAction(SciCRTRunAction* runaction)
- : fRunAction(runaction), fVerboseLevel(0), fTotalEdep(0.)
+ :fRunAction(runaction),fVerboseLevel(0),fTotalEdep(0.)
 {
-  fMPPCCollID = 0;
+  fMPPCCollID=0;
   //inicializo
   fScintCollID=0;
-  fEventMessenger = new SciCRTEventActionMessenger(this);
+  fEventMessenger=new SciCRTEventActionMessenger(this);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 SciCRTEventAction::~SciCRTEventAction()
 {
   delete fEventMessenger;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void SciCRTEventAction::BeginOfEventAction(const G4Event* evt)
 {
- fTotalEdep = 0.;
- G4int evtNb = evt->GetEventID();
+ fTotalEdep=0.;
+ G4int evtNb=evt->GetEventID();
  if(fVerboseLevel>0)
     G4cout << "<<< Evento  " << evtNb << " iniciado." << G4endl;
-}
+ }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -53,11 +50,10 @@ void SciCRTEventAction::BeginOfEventAction(const G4Event* evt)
 void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
 {
 
-
   if (fVerboseLevel>0)
      G4cout << "<<< Evento  " << evt->GetEventID() << " finalizado." << G4endl;
 
-  if (fRunAction->GetRndmFreq() == 2)
+  if (fRunAction->GetRndmFreq()==2)
     {
      std::ostringstream os;
      os<<"endOfEvent_"<<G4Threading::G4GetThreadId()<<".rndm";
@@ -66,15 +62,15 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
 
   // Get Hits from the detector if any
   G4SDManager * SDman = G4SDManager::GetSDMpointer();
-  G4String colName = "PhotonDetHitCollection";
-  fMPPCCollID = SDman->GetCollectionID(colName);
+  G4String colName="PhotonDetHitCollection";
+  fMPPCCollID=SDman->GetCollectionID(colName);
 
   //get hit
   fScintCollID = SDman->GetCollectionID("scintCollection");
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
-  SciCRTPhotonDetHitsCollection* mppcHC = 0;
+  SciCRTPhotonDetHitsCollection* mppcHC=0;
   //se declara en el hh
-  SciCRTScintHitsCollection* scintHC = 0;
+  SciCRTScintHitsCollection* scintHC=0;
 
   // get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
@@ -97,6 +93,7 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
        analysisManager->FillNtupleIColumn(1,0,evento);
        analysisManager->FillNtupleDColumn(1,1,energy);
        analysisManager->FillNtupleIColumn(1,2,n_hit);
+       analysisManager->AddNtupleRow(1);
        G4double tiempo;
        for(int i=0; i<n_hit;i++){
 		     tiempo=(*mppcHC)[i]->GetArrivalTime();
@@ -118,7 +115,6 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4int SciCRTEventAction::GetEventNo()
 {
   return fpEventManager->GetConstCurrentEvent()->GetEventID();

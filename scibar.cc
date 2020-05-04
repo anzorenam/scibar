@@ -16,7 +16,7 @@ int main(int argc,char** argv)
   G4MTRunManager *runManager=new G4MTRunManager;
 
   G4int nThreads=G4Threading::G4GetNumberOfCores();
-  runManager->SetNumberOfThreads(1);
+  runManager->SetNumberOfThreads(nThreads);
   G4String physName="QGSP_BERT_HP";
   SciCRTDetectorConstruction* detector=new SciCRTDetectorConstruction();
   runManager->SetUserInitialization(detector);
