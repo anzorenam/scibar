@@ -1,4 +1,4 @@
---Scintillator fiber 1.4
+--Scintillator fiber 1.5
 
 Final version of scintillator bar simulation (main code from Rocio Garcia)
 
@@ -8,5 +8,4 @@ Final version of scintillator bar simulation (main code from Rocio Garcia)
 - Object hierachy corrected.
 - Energy spectrum from EXPACS (minum energy to cross detector 380MeV).
 - Reflectance at the WLS end.
-
-Experiment and simulation don't agree (needs correction on attenuation)
+- Attenuation on the fiber corrected.

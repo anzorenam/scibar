@@ -1,4 +1,4 @@
---Scintillator fiber 1.4
+--Scintillator fiber 1.5
 
 Octava versión de la simulación del sistema Plástico/Fibra del SciCRT
 por Rocio García
@@ -13,3 +13,5 @@ por Rocio García
   -Experimento para verificar la mínima energía que requiere un muon para cruzar el SciCRT ----Emin ~380Mev
 -Cambia la estructura del los archivos de salida
 -Incluye valor de reflectancia de la pintura en el borde de la fibra.
+-Parametros ópticos leidos por medio de archivos.
+-Descripción de la atenuación en la fibra correcta.
