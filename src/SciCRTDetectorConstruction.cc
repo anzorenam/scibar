@@ -141,8 +141,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
         } else if(k==5){
           data_file>>pEn[j];
         } else if(k==6){
-          //data_file>>eMPPC[j];
-          eMPPC[j]=100.0;
+          data_file>>eMPPC[j];
         }
       }
     }

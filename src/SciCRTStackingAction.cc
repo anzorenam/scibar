@@ -8,32 +8,30 @@
 #include "SciCRTAnalysis.hh"
 #include <iomanip>
 
-SciCRTStackingAction::SciCRTStackingAction():fPhotonCounter(0){}
+SciCRTStackingAction::SciCRTStackingAction() : fPhotonCounter(0) { }
 
-SciCRTStackingAction::~SciCRTStackingAction(){}
+SciCRTStackingAction::~SciCRTStackingAction() {}
 
 G4ClassificationOfNewTrack
-      SciCRTStackingAction::ClassifyNewTrack(const G4Track *aTrack)
+      SciCRTStackingAction::ClassifyNewTrack(const G4Track * aTrack)
 {
-  G4ParticleDefinition* particleType = aTrack->GetDefinition();
-  // keep primary particle
-  if(aTrack->GetParentID()==0){
-   return fUrgent;
-  }
+  G4ParticleDefinition* particleType=aTrack->GetDefinition();
+  if (aTrack->GetParentID()==0){
+   return fUrgent;}
 
-  if(particleType==G4OpticalPhoton::OpticalPhotonDefinition()){
-    if(aTrack->GetParentID()>0){
-        fPhotonCounter++;
-        return fUrgent;
+  if (particleType == G4OpticalPhoton::OpticalPhotonDefinition()) {
+    if  (aTrack->GetVolume()->GetName()=="SciCRTFiber" || aTrack->GetVolume()->GetName()=="Scintillator"){
+     fPhotonCounter++;
+     return fUrgent;
     }
+  } else {
   }
-
   return fUrgent;
 }
 
 void SciCRTStackingAction::NewStage(){
-  G4cout<<"Numero de optical photons producidos en este evento: "
-        <<fPhotonCounter<<G4endl;
+   G4AnalysisManager* analysisManager=G4AnalysisManager::Instance();
+   analysisManager->FillNtupleIColumn(1,3,fPhotonCounter);
 }
 
 void SciCRTStackingAction::PrepareNewEvent() {fPhotonCounter=0;}
