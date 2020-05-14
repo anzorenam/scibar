@@ -13,7 +13,6 @@
 #include "G4UserSteppingAction.hh"
 
 class SciCRTDetectorConstruction;
-class SciCRTEventAction;
 class SciCRTSteppingActionMessenger;
 
 class G4Track;
@@ -25,7 +24,7 @@ class SciCRTSteppingAction : public G4UserSteppingAction
 {
   public:
 
-    SciCRTSteppingAction(SciCRTDetectorConstruction*, SciCRTEventAction*);
+    SciCRTSteppingAction(SciCRTDetectorConstruction*);
     virtual ~SciCRTSteppingAction();
 
     virtual void UserSteppingAction(const G4Step*);
@@ -68,7 +67,7 @@ class SciCRTSteppingAction : public G4UserSteppingAction
     static G4int fMaxRndmSave;
 
     SciCRTDetectorConstruction* fDetector;
-    SciCRTEventAction* fEventAction;
+
     SciCRTSteppingActionMessenger* fSteppingMessenger;
 
     inline void ResetCounters()

@@ -11,6 +11,7 @@
 
 #include "SciCRTPrimaryGeneratorAction.hh"
 #include "SciCRTDetectorConstruction.hh"
+#include "SciCRTPrimaryGeneratorMessenger.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4AutoLock.hh"
 

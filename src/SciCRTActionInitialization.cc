@@ -47,7 +47,7 @@ void SciCRTActionInitialization::Build() const
   SetUserAction(runAction);
   SetUserAction(eventAction);
   SetUserAction(new SciCRTTrackingAction());
-  SetUserAction(new SciCRTSteppingAction(fDetector,eventAction));
+  SetUserAction(new SciCRTSteppingAction(fDetector));
   SetUserAction(new SciCRTStackingAction());
 }
 

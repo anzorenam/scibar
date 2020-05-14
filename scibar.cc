@@ -1,4 +1,3 @@
-
 #include "G4MTRunManager.hh"
 #include "G4UImanager.hh"
 #include "Randomize.hh"
