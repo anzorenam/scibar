@@ -12,5 +12,5 @@
 # 10 barras (2.5cm*10.0)
 /gps/position 8.75 5 100 cm
 /gps/direction 0 -1 0
-/run/beamOn 100000
+/run/beamOn 10000
 

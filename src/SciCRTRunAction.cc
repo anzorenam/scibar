@@ -24,16 +24,17 @@ SciCRTRunAction::SciCRTRunAction()
   analysisManager->SetFirstNtupleId(1);
   analysisManager->CreateNtuple("edep","photons");
   analysisManager->CreateNtupleIColumn("evento");
-  analysisManager->CreateNtupleDColumn("energy_in");
+  analysisManager->CreateNtupleDColumn("energy");
   analysisManager->CreateNtupleDColumn("edep");
   analysisManager->CreateNtupleIColumn("num_all");
   analysisManager->CreateNtupleIColumn("num_pmt");
   analysisManager->FinishNtuple();
 
-  analysisManager->CreateNtuple("time","tiempo");
+  analysisManager->CreateNtuple("photons","time-waveL");
   analysisManager->CreateNtupleIColumn("evento");
   analysisManager->CreateNtupleIColumn("ID");
-  analysisManager->CreateNtupleDColumn("Time");
+  analysisManager->CreateNtupleDColumn("time");
+  analysisManager->CreateNtupleDColumn("wave");
   analysisManager->FinishNtuple();
 
 }

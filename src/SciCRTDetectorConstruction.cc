@@ -149,7 +149,9 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   data_file.close();
 
   for(int j=0;j<Ne;j++){
+    pEn[j]*=eV;
     eMPPC[j]*=0.01;
+
   }
 
   TiO2SurfaceProperty->AddProperty("REFLECTIVITY",pEn,refl_TiO2,Ne);
@@ -236,7 +238,7 @@ void SciCRTDetectorConstruction::ConstructFiber(G4double pEn[],G4double rMi[],G4
 
   G4LogicalVolume* logicSciCRTfiber=new G4LogicalVolume(solidSciCRTfiber,FindMaterial("Pethylene"),"SciCRTFiber");
 
-  //aqui se puede juagr un poco con la simulacion *****
+  //aqui se puede jugar un poco con la simulacion *****
   //DBL_MAX viene de una clase que proporciona cross sections y stopping powers
   //y nos ayuda a acceder a metodos
   // http://www.sixiangguo.net/code/geant4/AppDevelop/ch05s07.html
@@ -255,7 +257,7 @@ void SciCRTDetectorConstruction::ConstructFiber(G4double pEn[],G4double rMi[],G4
   //--------------------------------------------------
 
   // Place the mirror only if the user wants the mirror
-  if (fMirrorToggle){G4VSolid* solidMirror=new   G4Box("Mirror",fMirrorRmax,fMirrorRmax,fMirrorZ);
+  if (fMirrorToggle){G4VSolid* solidMirror=new G4Box("Mirror",fMirrorRmax,fMirrorRmax,fMirrorZ);
      G4LogicalVolume* logicMirror=new G4LogicalVolume(solidMirror,FindMaterial("G4_Al"),"Mirror");
      G4OpticalSurface* mirrorSurface=new G4OpticalSurface("MirrorSurface",glisur,ground,dielectric_metal,fMirrorPolish);
      G4MaterialPropertiesTable* mirrorSurfaceProperty=new G4MaterialPropertiesTable();

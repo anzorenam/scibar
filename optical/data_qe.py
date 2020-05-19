@@ -24,12 +24,12 @@ x=np.flip(Kconv/data[:,0])
 y=np.flip(data[:,1])
 xs=np.arange(1.0,5.0,0.01)
 
-cs=interp.InterpolatedUnivariateSpline(x,y,k=1,ext=0)
+cs=interp.InterpolatedUnivariateSpline(x,y,k=1,ext=3)
 ys=cs(xs)
-ys[ys<0.001]=0.001
+#ys[ys<0.001]=0.001
 print(Kconv/5.0,Kconv/1.96,np.shape(ys))
 if w==True:
-  f=open('scibar_const.dat','a')
+  f=open('scibar_optics1.csv','w')
   np.savetxt(f,xs,fmt='%1.14f',newline=' ')
   f.write('\n')
   np.savetxt(f,ys,fmt='%1.14f',newline=' ')

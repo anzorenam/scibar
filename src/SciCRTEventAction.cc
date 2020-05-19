@@ -78,7 +78,7 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
   }
 
   G4int evento=evt->GetEventID();
-  G4double energy_in=evt->GetPrimaryVertex()->GetPrimary()->GetKineticEnergy();
+  G4double energy=evt->GetPrimaryVertex()->GetPrimary()->GetKineticEnergy();
 
   if (mppcHC)
   {
@@ -86,18 +86,20 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
      if (n_hit!=0){
        // fill histograms solo cuando se usa g4root, de otra manera se llena la tuple
        analysisManager->FillNtupleIColumn(1,0,evento);
-       analysisManager->FillNtupleDColumn(1,1,energy_in);
+       analysisManager->FillNtupleDColumn(1,1,energy);
        analysisManager->FillNtupleIColumn(1,4,n_hit);
 	     //analysisManager->AddNtupleRow(1);
 	     G4cout << "Numero de evento: "<< evento << G4endl;
        //Dato importante Marcos
-       G4double tiempo;
+       G4double tiempo,wavelen;
        for(int i=0;i<n_hit;i++){
 		     tiempo=(*mppcHC)[i]->GetArrivalTime();
+         wavelen=(*mppcHC)[i]->GetWaveLen();
 		     // fill ntuple
          analysisManager->FillNtupleIColumn(2,0,evento);
 		     analysisManager->FillNtupleIColumn(2,1,i);
 		     analysisManager->FillNtupleDColumn(2,2,tiempo);
+         analysisManager->FillNtupleDColumn(2,3,wavelen/nm);
 		     analysisManager->AddNtupleRow(2);
 		   }
 	   }
@@ -118,8 +120,8 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
 		if(TotE==0.){
 			G4cout<<"No hay hits en el centellador en este evento."<<G4endl;
 		}
-		G4double Energia=TotE/MeV;
-		analysisManager->FillNtupleDColumn(1,2,Energia);
+		G4double energy_out=TotE/MeV;
+		analysisManager->FillNtupleDColumn(1,2,energy_out);
 	  analysisManager->AddNtupleRow(1);
 	 }
 }

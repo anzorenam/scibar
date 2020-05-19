@@ -1,11 +1,3 @@
-
-/// \file optical/SciCRT/include/SciCRTPhotonDetHit.hh
-/// \brief Definition of the SciCRTPhotonDetHit class
-//
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
 #ifndef SciCRTPhotonDetHit_h
 #define SciCRTPhotonDetHit_h 1
 
@@ -33,7 +25,7 @@ class SciCRTPhotonDetHit : public G4VHit
   public:
 
     SciCRTPhotonDetHit();
-    SciCRTPhotonDetHit(G4ThreeVector pExit, G4ThreeVector pArrive, G4double pTime);
+    SciCRTPhotonDetHit(G4ThreeVector pExit, G4ThreeVector pArrive, G4double pTime, G4double pLen);
     virtual ~SciCRTPhotonDetHit();
 
     SciCRTPhotonDetHit(const SciCRTPhotonDetHit &right);
@@ -52,9 +44,13 @@ class SciCRTPhotonDetHit : public G4VHit
 
     inline void SetArrivalTime(G4double t) { fArrivalTime = t; }
     inline G4double GetArrivalTime() { return fArrivalTime; }
- 
+
+    inline void SetWaveLen(G4double e) { fwaveLen = e; }
+    inline G4double GetWaveLen() { return fwaveLen;}
+
   private:
 
+    G4double fwaveLen;
     // the arrival time of the photon
     G4double      fArrivalTime;
     // where the photon hit the detector (detector's coordinate)

@@ -293,7 +293,7 @@ void SciCRTMaterials::CreateMaterials()
   mptPolystyrene->AddProperty("RINDEX",pEn,rIndPS,Ne);
   mptPolystyrene->AddProperty("ABSLENGTH",pEn,absPS,Ne);
   mptPolystyrene->AddProperty("FASTCOMPONENT",pEn,emiPS,Ne);
-  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",9./keV);
+  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",100./MeV);
   mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
   mptPolystyrene->AddConstProperty("FASTTIMECONSTANT",3.6*ns);
   fPolystyrene->SetMaterialPropertiesTable(mptPolystyrene);

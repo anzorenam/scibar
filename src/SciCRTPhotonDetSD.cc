@@ -1,7 +1,3 @@
-/// \file optical/SciCRT/src/SciCRTPhotonDetSD.cc
-/// \brief Implementation of the SciCRTPhotonDetSD class
-//
-//
 #include "SciCRTPhotonDetSD.hh"
 #include "SciCRTPhotonDetHit.hh"
 #include "SciCRTUserTrackInformation.hh"
@@ -16,19 +12,13 @@
 #include "G4ParticleTypes.hh"
 #include "G4ParticleDefinition.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 SciCRTPhotonDetSD::SciCRTPhotonDetSD(G4String name)
   : G4VSensitiveDetector(name), fPhotonDetHitCollection(0)
 {
   collectionName.insert("PhotonDetHitCollection");
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 SciCRTPhotonDetSD::~SciCRTPhotonDetSD() { }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void SciCRTPhotonDetSD::Initialize(G4HCofThisEvent* HCE)
 {
@@ -40,14 +30,10 @@ void SciCRTPhotonDetSD::Initialize(G4HCofThisEvent* HCE)
   HCE->AddHitsCollection( HCID, fPhotonDetHitCollection );
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 G4bool SciCRTPhotonDetSD::ProcessHits(G4Step* , G4TouchableHistory* )
 {
   return false;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 G4bool SciCRTPhotonDetSD::ProcessHits_constStep(const G4Step* aStep,
                                              G4TouchableHistory* )
@@ -56,35 +42,32 @@ G4bool SciCRTPhotonDetSD::ProcessHits_constStep(const G4Step* aStep,
 {
   if (aStep == NULL) return false;
   G4Track* theTrack = aStep->GetTrack();
-  //G4double edep = aStep->GetTotalEnergyDeposit();
-  //if(edep!=0){G4cout << "Energia depositada= " << G4BestUnit(edep,"Energy")<< G4endl;}
-  
-  
+
   // necesita conocer si este es un optical photon
   if(theTrack->GetDefinition()
      != G4OpticalPhoton::OpticalPhotonDefinition()) return false;
 
   // descubrir informacion sobre los hits
-  G4StepPoint* thePostPoint = aStep->GetPostStepPoint();
- 
+  G4StepPoint* thePostPoint=aStep->GetPostStepPoint();
+
   SciCRTUserTrackInformation* trackInformation
       = (SciCRTUserTrackInformation*)theTrack->GetUserInformation();
- 
+
   G4TouchableHistory* theTouchable
       = (G4TouchableHistory*)(thePostPoint->GetTouchable());
- 
-  G4ThreeVector photonExit   = trackInformation -> GetExitPosition();
-  G4ThreeVector photonArrive = thePostPoint -> GetPosition();
-  G4double      arrivalTime  = theTrack -> GetGlobalTime();
 
-  //convienrte las coordenadas globales de los fotones que llegan en 
-  // coordenadas locales del detector
+  G4double kcon=6.62607015*(1.0/1.602176634)*0.299792458*(1e-3);
+  G4ThreeVector photonExit=trackInformation->GetExitPosition();
+  G4ThreeVector photonArrive=thePostPoint->GetPosition();
+  G4double arrivalTime=theTrack->GetGlobalTime();
+  G4double pen=theTrack->GetKineticEnergy();
+  G4double waveLen=kcon/pen;
   photonArrive = theTouchable->GetHistory()->
                                 GetTopTransform().TransformPoint(photonArrive);
 
   // crea el hit y lo añade a la coleccion
   fPhotonDetHitCollection->
-            insert(new SciCRTPhotonDetHit(photonExit, photonArrive, arrivalTime));
+            insert(new SciCRTPhotonDetHit(photonExit,photonArrive,arrivalTime,waveLen));
 
   return true;
 }
