@@ -133,7 +133,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
         } else if(k==1){
           effi_TiO2[j]=0;
         } else if(k==2){
-          rMi[j]=0.46;
+          rMi[j]=0.01;
         } else if(k==3){
           eMi[j]=0;
         } else if(k==4){
