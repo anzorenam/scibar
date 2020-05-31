@@ -99,7 +99,7 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
          analysisManager->FillNtupleIColumn(2,0,evento);
 		     analysisManager->FillNtupleIColumn(2,1,i);
 		     analysisManager->FillNtupleDColumn(2,2,tiempo);
-         analysisManager->FillNtupleDColumn(2,3,wavelen/nm);
+         analysisManager->FillNtupleDColumn(2,3,wavelen);
 		     analysisManager->AddNtupleRow(2);
 		   }
 	   }

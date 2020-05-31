@@ -13,13 +13,13 @@ class SciCRTMaterials
   public:
 
     virtual ~SciCRTMaterials();
- 
+
     static SciCRTMaterials* GetInstance();
 
     G4Material* GetMaterial(const G4String);
- 
+
   private:
- 
+
     SciCRTMaterials();
 
     void CreateMaterials();
@@ -38,6 +38,7 @@ class SciCRTMaterials
     G4Material*        fPethylene;
     G4Material*        fFPethylene;
     G4Material*        fPolystyrene;
+    G4Material*        fPolystyrene2;
     G4Material*        fSilicone;
     G4Material*        fCoating;
 

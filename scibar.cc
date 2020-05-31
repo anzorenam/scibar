@@ -1,3 +1,4 @@
+
 #include "G4MTRunManager.hh"
 #include "G4UImanager.hh"
 #include "Randomize.hh"
@@ -22,6 +23,7 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(new SciCRTPhysicsList(physName));
   runManager->SetUserInitialization(new SciCRTActionInitialization(detector));
   runManager->Initialize();
+
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
   G4int optmax = argc;

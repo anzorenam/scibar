@@ -15,6 +15,7 @@ SciCRTMaterials::~SciCRTMaterials()
   delete fPethylene;
   delete fFPethylene;
   delete fPolystyrene;
+  delete fPolystyrene2;
   delete fSilicone;
 }
 
@@ -126,6 +127,23 @@ void SciCRTMaterials::CreateMaterials()
   //de medina-tanco
   density=1.080*g/cm3;
   fPolystyrene=fNistMan->ConstructNewMaterial("Polystyrene",elements,natoms,density);
+  elements.clear();
+  natoms.clear();
+
+  //--------------------------------------------------
+  // Polystyrene absorber
+  //--------------------------------------------------
+
+  elements.push_back("C");     natoms.push_back(8);
+  elements.push_back("H");     natoms.push_back(8);
+
+  //density = 1.050*g/cm3;
+  //de medina-tanco
+  density = 1.080*g/cm3;
+
+  fPolystyrene2= fNistMan->
+          ConstructNewMaterial("Polys2", elements, natoms, density);
+
   elements.clear();
   natoms.clear();
 
@@ -244,7 +262,7 @@ void SciCRTMaterials::CreateMaterials()
   mptSciCRTfiber->AddProperty("WLSABSLENGTH",pEn,absWLS,Ne);
   mptSciCRTfiber->AddProperty("WLSCOMPONENT",pEn,emiFb,Ne);
   //PENDIENTE de 0.5ns a 10ns por knoll y Super-IFR ...
-  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT", 10.*ns);
+  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT",2.7*ns);
   fPethylene->SetMaterialPropertiesTable(mptSciCRTfiber);
 
   //--------------------------------------------------
@@ -293,7 +311,7 @@ void SciCRTMaterials::CreateMaterials()
   mptPolystyrene->AddProperty("RINDEX",pEn,rIndPS,Ne);
   mptPolystyrene->AddProperty("ABSLENGTH",pEn,absPS,Ne);
   mptPolystyrene->AddProperty("FASTCOMPONENT",pEn,emiPS,Ne);
-  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",500./MeV);
+  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",8./keV);
   mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
   mptPolystyrene->AddConstProperty("FASTTIMECONSTANT",3.6*ns);
   fPolystyrene->SetMaterialPropertiesTable(mptPolystyrene);

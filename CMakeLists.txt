@@ -42,6 +42,7 @@ target_link_libraries(scibar ${Geant4_LIBRARIES} )
 set(scibar_SCRIPTS
     test.mac
     input_spec.dat
+    runsim.sh
    )
 
 foreach(_script ${scibar_SCRIPTS})

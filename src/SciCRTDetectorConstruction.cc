@@ -104,6 +104,14 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   fLogicWorld = new G4LogicalVolume(solidWorld,FindMaterial("G4_AIR"),"World");
   fPhysiWorld = new G4PVPlacement(0,G4ThreeVector(),fLogicWorld,"World",0,false,0);
 
+  //-------------------------------------------------
+  // volumen amortiguador
+  //-------------------------------------------------
+
+  G4VSolid* solid_env =new G4Box("Env",2.0*cm,81.9*cm,180.0*cm);
+  G4LogicalVolume* logic_env = new G4LogicalVolume(solid_env,FindMaterial("G4_AIR"),"Env");
+  new G4PVPlacement(0,G4ThreeVector(xx,81.9*cm,zz),logic_env,"Env",fLogicWorld,false,0);
+
   //--------------------------------------------------
   // Extrusion
   //--------------------------------------------------
@@ -160,6 +168,17 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   new G4PVPlacement(0,G4ThreeVector(xx,yy,zz),logicExtrusion,"Extrusion",fLogicWorld,false,0);
   new G4LogicalSkinSurface("TiO2Surface",logicExtrusion,TiO2Surface);
 
+  //-------------------------------------------------
+  // extrusion amortiguador
+  //-------------------------------------------------
+
+  G4VSolid* solidExtrusion2 =new G4Box("Extr",GetBarBase()-0.05*cm,GetBarBase()/2,GetBarLength()/2);
+  G4LogicalVolume* logicExtrusion2 =new G4LogicalVolume(solidExtrusion2,FindMaterial("Coating"),"Extr");
+  //(xx,yy+20*cm,zz)
+  //new G4PVPlacement(0,G4ThreeVector(),logicExtrusion2,"Extrusion",logic_env,false,0);
+  new G4LogicalSkinSurface("TiO2Surface",logicExtrusion2,TiO2Surface);
+  new G4PVReplica("Extr",logicExtrusion2,logic_env,kYAxis,126,1.3*cm,0);
+
   //--------------------------------------------------
   // Scintillator
   //--------------------------------------------------
@@ -171,15 +190,31 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   G4LogicalVolume* logicScintillator=new G4LogicalVolume(solidScintillator,FindMaterial("Polystyrene"),"Scintillator");
   new G4PVPlacement(0,G4ThreeVector(),logicScintillator,"Scintillator",logicExtrusion,false,0);
 
+  //---------------------------------------------------
+  // creacion del amortiguador usando polyestireno pero sin propiedades luminosas
+  //---------------------------------------------------
+  G4VSolid* absorberS = new G4Box("Absor",
+                                GetBarBase()-0.05*cm-GetCoatingThickness()-GetCoatingRadius(),
+                                GetBarBase()/2-GetCoatingThickness()-GetCoatingRadius(),
+                                GetBarLength()/2);
+  G4LogicalVolume* absLV =new G4LogicalVolume(absorberS,FindMaterial("Polys2"),"Absor");
+  new G4PVPlacement(0,G4ThreeVector(),absLV,"Absor",logicExtrusion2,false,0);
+
   // el tamaño de la fibra es cte igual que el hole
   G4VSolid* solidHole = new G4Tubs("Hole",0.0*cm,0.9*mm,fClad2Z+0.75*mm,0.*deg,360.*deg);
   fLogicHole = new G4LogicalVolume(solidHole,FindMaterial("G4_AIR"),"Hole");
   fPhysiHole = new G4PVPlacement(0,G4ThreeVector(0.0,0.0,fSciCRTfiberOrigin+0.75*mm),fLogicHole,"Hole",logicScintillator,false,0);
 
   //--------------------------------------------------
+  // finaliza construccion amortiguador
+  //--------------------------------------------------
+  G4VSolid* solidHole2 = new G4Tubs("Hole",0.0*cm,0.9*mm,fClad2Z+0.75*mm,0.*deg,360.*deg);
+  G4LogicalVolume* fLogicHole2 = new G4LogicalVolume(solidHole2,FindMaterial("G4_AIR"),"Hole");
+  new G4PVPlacement(0,G4ThreeVector(0.0,0.0,fSciCRTfiberOrigin+0.75*mm),fLogicHole2,"Hole",absLV,false,0);
+
+  //--------------------------------------------------
   // Fiber- funcion siguiente
   //--------------------------------------------------
-
 
   ConstructFiber(pEn,rMi,eMi,rMPPC,eMPPC,Ne);
   return fPhysiWorld;

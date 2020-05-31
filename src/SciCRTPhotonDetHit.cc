@@ -6,8 +6,8 @@ SciCRTPhotonDetHit::SciCRTPhotonDetHit()
 {
   fwaveLen=0.;
   fArrivalTime=0.;
-  fPosArrive=G4ThreeVector(0., 0., 0.);
-  fPosExit=G4ThreeVector(0., 0., 0.);
+  fPosArrive=G4ThreeVector(0.,0.,0.);
+  fPosExit=G4ThreeVector(0.,0.,0.);
 }
 
 SciCRTPhotonDetHit::SciCRTPhotonDetHit(G4ThreeVector pExit,
@@ -45,6 +45,6 @@ G4int SciCRTPhotonDetHit::operator==(const SciCRTPhotonDetHit& right) const
 {
   return fPosExit     == right.fPosExit    &&
          fPosArrive   == right.fPosArrive  &&
-         fArrivalTime == right.fArrivalTime;
+         fArrivalTime == right.fArrivalTime &&
          fwaveLen == right.fwaveLen;
 }
