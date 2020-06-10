@@ -1,6 +1,6 @@
---Scintillator fiber 1.5
+--Scintillator fiber 1.7
 
-Octava versión de la simulación del sistema Plástico/Fibra del SciCRT
+Versión final de la simulación del sistema Plástico/Fibra del SciCRT
 por Rocio García
 -Contiene una descripción detallada del plástico y la WLS.
 -Modifique constante de Birks a 0.208 (materials) y DBL_MAX (detector construction)
@@ -15,3 +15,5 @@ por Rocio García
 -Incluye valor de reflectancia de la pintura en el borde de la fibra.
 -Parametros ópticos leidos por medio de archivos.
 -Descripción de la atenuación en la fibra correcta.
+-Acoplamiento entre el coating y el centellador incluye efecto de rugosidad.
+-Tiempo de levantamiento diferente de cero.

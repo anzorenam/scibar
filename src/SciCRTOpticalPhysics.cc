@@ -1,10 +1,3 @@
-/// \file optical/SciCRT/src/SciCRTOpticalPhysics.cc
-/// \brief Implementation of the SciCRTOpticalPhysics class
-//
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-
 #include "G4LossTableManager.hh"
 #include "G4EmSaturation.hh"
 #include "SciCRTOpticalPhysics.hh"
@@ -12,14 +5,13 @@
 SciCRTOpticalPhysics::SciCRTOpticalPhysics(G4bool toggle)
     : G4VPhysicsConstructor("Optical")
 {
-  fSciCRTProcess                = NULL;
+  fSciCRTProcess             = NULL;
   fScintProcess              = NULL;
   fCerenkovProcess           = NULL;
   fBoundaryProcess           = NULL;
   fAbsorptionProcess         = NULL;
   fRayleighScattering        = NULL;
   fMieHGScatteringProcess    = NULL;
-
   fAbsorptionOn              = toggle;
 }
 
@@ -39,13 +31,15 @@ void SciCRTOpticalPhysics::ConstructProcess()
     G4cout << "SciCRTOpticalPhysics:: Add Optical Physics Processes"
            << G4endl;
 
-  fSciCRTProcess = new G4OpWLS();
+  fSciCRTProcess=new G4OpWLS();
 
-  fScintProcess = new G4Scintillation();
+  fScintProcess=new G4Scintillation("Scintillation");
   fScintProcess->SetScintillationYieldFactor(1.);
+  fScintProcess->SetScintillationExcitationRatio(0.0);
   fScintProcess->SetTrackSecondariesFirst(true);
+  fScintProcess->SetFiniteRiseTime(true);
 
-  fCerenkovProcess = new G4Cerenkov();
+  fCerenkovProcess=new G4Cerenkov();
   fCerenkovProcess->SetMaxNumPhotonsPerStep(300);
   fCerenkovProcess->SetTrackSecondariesFirst(true);
 
@@ -66,19 +60,12 @@ void SciCRTOpticalPhysics::ConstructProcess()
 
   if (fAbsorptionOn) pManager->AddDiscreteProcess(fAbsorptionProcess);
 
-  //pManager->AddDiscreteProcess(fRayleighScattering);
-  //pManager->AddDiscreteProcess(fMieHGScatteringProcess);
+  pManager->AddDiscreteProcess(fRayleighScattering);
+  pManager->AddDiscreteProcess(fMieHGScatteringProcess);
 
   pManager->AddDiscreteProcess(fBoundaryProcess);
-
-  //fSciCRTProcess->UseTimeProfile("delta");
   fSciCRTProcess->UseTimeProfile("exponential");
-
   pManager->AddDiscreteProcess(fSciCRTProcess);
-
-  fScintProcess->SetScintillationYieldFactor(1.);
-  fScintProcess->SetScintillationExcitationRatio(0.0);
-  fScintProcess->SetTrackSecondariesFirst(true);
 
   // Use Birks Correction in the Scintillation process
 

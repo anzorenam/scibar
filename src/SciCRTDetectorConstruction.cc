@@ -112,20 +112,13 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   G4LogicalVolume* logic_env = new G4LogicalVolume(solid_env,FindMaterial("G4_AIR"),"Env");
   new G4PVPlacement(0,G4ThreeVector(xx,81.9*cm,zz),logic_env,"Env",fLogicWorld,false,0);
 
-  //--------------------------------------------------
-  // Extrusion
-  //--------------------------------------------------
-
-  G4VSolid* solidExtrusion=new G4Box("Extrusion",GetBarBase()-0.05*cm,GetBarBase()/2,GetBarLength()/2);
-  G4LogicalVolume* logicExtrusion=new G4LogicalVolume(solidExtrusion,FindMaterial("Coating"),"Extrusion");
-
-  //medina aconseja un 0.5 en rugosidad y con estas caracteristicas de la superficie
-  G4OpticalSurface* TiO2Surface=new G4OpticalSurface("TiO2Surface",glisur,ground,dielectric_metal,fExtrusionPolish);
-  G4MaterialPropertiesTable* TiO2SurfaceProperty=new G4MaterialPropertiesTable();
+  //-------------------------------------------------
+  //
+  //-------------------------------------------------
 
   const G4int Ne=400;
-  G4double pEn[Ne],refl_TiO2[Ne],effi_TiO2[Ne],rMi[Ne];
-  G4double eMi[Ne],rMPPC[Ne],eMPPC[Ne];
+  G4double pEn[Ne],rTiO2[Ne],eTiO2[Ne],rMi[Ne];
+  G4double eMi[Ne],rMPPC[Ne],eMPPC[Ne],specLO[Ne];
 
   G4String filename="optical/scibar_optics1.csv";
   std::ifstream data_file;
@@ -134,14 +127,14 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
     G4cout << "File open error "<< G4endl;
   }
   else{
-    for(int k=0;k<8;k++){
+    for(int k=0;k<10;k++){
       for(int j=0;j<Ne;j++){
         if(k==0){
-          refl_TiO2[j]=0.93;
+          rTiO2[j]=0.9;
         } else if(k==1){
-          effi_TiO2[j]=0;
+          eTiO2[j]=0;
         } else if(k==2){
-          rMi[j]=0.01;
+          rMi[j]=0.5;
         } else if(k==3){
           eMi[j]=0;
         } else if(k==4){
@@ -150,6 +143,8 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
           data_file>>pEn[j];
         } else if(k==6){
           data_file>>eMPPC[j];
+        } else if(k==7){
+          specLO[j]=0.85;
         }
       }
     }
@@ -162,8 +157,20 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
 
   }
 
-  TiO2SurfaceProperty->AddProperty("REFLECTIVITY",pEn,refl_TiO2,Ne);
-  TiO2SurfaceProperty->AddProperty("EFFICIENCY",pEn,effi_TiO2,Ne);
+  //--------------------------------------------------
+  // Extrusion
+  //--------------------------------------------------
+
+  G4VSolid* solidExtrusion=new G4Box("Extrusion",GetBarBase()-0.05*cm,GetBarBase()/2,GetBarLength()/2);
+  G4LogicalVolume* logicExtrusion=new G4LogicalVolume(solidExtrusion,FindMaterial("Coating"),"Extrusion");
+
+  //medina aconseja un 0.5 en rugosidad y con estas caracteristicas de la superficie
+  G4OpticalSurface* TiO2Surface=new G4OpticalSurface("TiO2Surface",glisur,ground,dielectric_metal,fExtrusionPolish);
+  G4MaterialPropertiesTable* TiO2SurfaceProperty=new G4MaterialPropertiesTable();
+
+  TiO2SurfaceProperty->AddProperty("SPECULARLOBECONSTANT",pEn,specLO,Ne);
+  TiO2SurfaceProperty->AddProperty("REFLECTIVITY",pEn,rTiO2,Ne);
+  TiO2SurfaceProperty->AddProperty("EFFICIENCY",pEn,eTiO2,Ne);
   TiO2Surface->SetMaterialPropertiesTable(TiO2SurfaceProperty);
   new G4PVPlacement(0,G4ThreeVector(xx,yy,zz),logicExtrusion,"Extrusion",fLogicWorld,false,0);
   new G4LogicalSkinSurface("TiO2Surface",logicExtrusion,TiO2Surface);

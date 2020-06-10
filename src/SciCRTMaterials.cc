@@ -262,7 +262,8 @@ void SciCRTMaterials::CreateMaterials()
   mptSciCRTfiber->AddProperty("WLSABSLENGTH",pEn,absWLS,Ne);
   mptSciCRTfiber->AddProperty("WLSCOMPONENT",pEn,emiFb,Ne);
   //PENDIENTE de 0.5ns a 10ns por knoll y Super-IFR ...
-  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT",2.7*ns);
+  //12ns valor medido por experimento rusp
+  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT",12.0*ns);
   fPethylene->SetMaterialPropertiesTable(mptSciCRTfiber);
 
   //--------------------------------------------------
