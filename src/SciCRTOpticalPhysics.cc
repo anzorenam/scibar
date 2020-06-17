@@ -37,7 +37,7 @@ void SciCRTOpticalPhysics::ConstructProcess()
   fScintProcess->SetScintillationYieldFactor(1.);
   fScintProcess->SetScintillationExcitationRatio(0.0);
   fScintProcess->SetTrackSecondariesFirst(true);
-  fScintProcess->SetFiniteRiseTime(true);
+  //fScintProcess->SetFiniteRiseTime(true);
 
   fCerenkovProcess=new G4Cerenkov();
   fCerenkovProcess->SetMaxNumPhotonsPerStep(300);

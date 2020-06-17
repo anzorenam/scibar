@@ -75,6 +75,12 @@ void SciCRTMaterials::CreateMaterials()
   fAir=fNistMan->FindOrBuildMaterial("G4_AIR");
 
   //--------------------------------------------------
+  // Steel
+  //--------------------------------------------------
+  density= 7.87*g/cm3;
+  facero_mat = new G4Material("Steel", nz=26, a= 55.85*g/mole, density);
+
+  //--------------------------------------------------
   // Glass
   //--------------------------------------------------
 

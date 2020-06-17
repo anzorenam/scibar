@@ -100,21 +100,38 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   // El universo de aire
   //--------------------------------------------------
 
-  G4VSolid* solidWorld =new G4Box("World",12.5*cm,200*cm,200.0*cm);
-  fLogicWorld = new G4LogicalVolume(solidWorld,FindMaterial("G4_AIR"),"World");
-  fPhysiWorld = new G4PVPlacement(0,G4ThreeVector(),fLogicWorld,"World",0,false,0);
+  G4VSolid* solidWorld=new G4Box("World",15.0*cm,200.0*cm,200.0*cm);
+  fLogicWorld=new G4LogicalVolume(solidWorld,FindMaterial("G4_AIR"),"World");
+  fPhysiWorld=new G4PVPlacement(0,G4ThreeVector(),fLogicWorld,"World",0,false,0);
 
   //-------------------------------------------------
   // volumen amortiguador
   //-------------------------------------------------
 
-  G4VSolid* solid_env =new G4Box("Env",2.0*cm,81.9*cm,180.0*cm);
-  G4LogicalVolume* logic_env = new G4LogicalVolume(solid_env,FindMaterial("G4_AIR"),"Env");
-  new G4PVPlacement(0,G4ThreeVector(xx,81.9*cm,zz),logic_env,"Env",fLogicWorld,false,0);
+  G4VSolid* solid_bot=new G4Box("env_bot",2.0*cm,9.75*cm,180.0*cm);
+  G4LogicalVolume* logic_bot=new G4LogicalVolume(solid_bot,FindMaterial("G4_AIR"),"env_bot");
+  new G4PVPlacement(0,G4ThreeVector(xx,9.75*cm,zz),logic_bot,"env_bot",fLogicWorld,false,0);
 
-  //-------------------------------------------------
-  //
-  //-------------------------------------------------
+  G4VSolid* solid_all=new G4Box("env_all",2.0*cm,75.46*cm,180.0*cm);
+  G4LogicalVolume* logic_all=new G4LogicalVolume(solid_all,FindMaterial("G4_AIR"),"env_all");
+  new G4PVPlacement(0,G4ThreeVector(xx,94.96*cm,zz),logic_all,"env_all",fLogicWorld,false,0);
+
+  // barras de acero
+
+  G4double steel_L=25.0*mm;
+  G4double steel_w=7.6*mm;
+  G4double steel_z=3600*mm;
+
+  G4VSolid* solidSq=new G4Box("Square",0.5*steel_L,0.5*steel_w,0.5*steel_z);
+  G4LogicalVolume* logicSq=new G4LogicalVolume(solidSq,FindMaterial("Steel"),"Square");
+  for (G4int j=0;j<7;j++){
+    G4double y_ext=19.88+20.8*j+0.76*j;
+    new G4PVPlacement(0,G4ThreeVector(xx,y_ext*cm,zz),logicSq,"Square",fLogicWorld,false,0);
+  }
+
+  //--------------------------------------------------
+  // propiedades opticas
+  //--------------------------------------------------
 
   const G4int Ne=400;
   G4double pEn[Ne],rTiO2[Ne],eTiO2[Ne],rMi[Ne];
@@ -154,7 +171,6 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   for(int j=0;j<Ne;j++){
     pEn[j]*=eV;
     eMPPC[j]*=0.01;
-
   }
 
   //--------------------------------------------------
@@ -167,7 +183,6 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   //medina aconseja un 0.5 en rugosidad y con estas caracteristicas de la superficie
   G4OpticalSurface* TiO2Surface=new G4OpticalSurface("TiO2Surface",glisur,ground,dielectric_metal,fExtrusionPolish);
   G4MaterialPropertiesTable* TiO2SurfaceProperty=new G4MaterialPropertiesTable();
-
   TiO2SurfaceProperty->AddProperty("SPECULARLOBECONSTANT",pEn,specLO,Ne);
   TiO2SurfaceProperty->AddProperty("REFLECTIVITY",pEn,rTiO2,Ne);
   TiO2SurfaceProperty->AddProperty("EFFICIENCY",pEn,eTiO2,Ne);
@@ -181,10 +196,16 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
 
   G4VSolid* solidExtrusion2 =new G4Box("Extr",GetBarBase()-0.05*cm,GetBarBase()/2,GetBarLength()/2);
   G4LogicalVolume* logicExtrusion2 =new G4LogicalVolume(solidExtrusion2,FindMaterial("Coating"),"Extr");
-  //(xx,yy+20*cm,zz)
-  //new G4PVPlacement(0,G4ThreeVector(),logicExtrusion2,"Extrusion",logic_env,false,0);
   new G4LogicalSkinSurface("TiO2Surface",logicExtrusion2,TiO2Surface);
-  new G4PVReplica("Extr",logicExtrusion2,logic_env,kYAxis,126,1.3*cm,0);
+  new G4PVReplica("Extr",logicExtrusion2,logic_bot,kYAxis,15,1.3*cm,0);
+
+  for (G4int j=0;j<7;j++){
+    for (G4int k=0;k<16;k++){
+      G4double y_ext=20.26+0.65*(2*k+1)+(20.8+0.76)*j;
+      G4cout<<y_ext<<G4endl;
+      new G4PVPlacement(0,G4ThreeVector(xx,y_ext*cm,zz),logicExtrusion2,"Extr",fLogicWorld,false,k);
+    }
+  }
 
   //--------------------------------------------------
   // Scintillator
@@ -200,6 +221,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   //---------------------------------------------------
   // creacion del amortiguador usando polyestireno pero sin propiedades luminosas
   //---------------------------------------------------
+
   G4VSolid* absorberS = new G4Box("Absor",
                                 GetBarBase()-0.05*cm-GetCoatingThickness()-GetCoatingRadius(),
                                 GetBarBase()/2-GetCoatingThickness()-GetCoatingRadius(),
@@ -208,6 +230,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   new G4PVPlacement(0,G4ThreeVector(),absLV,"Absor",logicExtrusion2,false,0);
 
   // el tamaño de la fibra es cte igual que el hole
+
   G4VSolid* solidHole = new G4Tubs("Hole",0.0*cm,0.9*mm,fClad2Z+0.75*mm,0.*deg,360.*deg);
   fLogicHole = new G4LogicalVolume(solidHole,FindMaterial("G4_AIR"),"Hole");
   fPhysiHole = new G4PVPlacement(0,G4ThreeVector(0.0,0.0,fSciCRTfiberOrigin+0.75*mm),fLogicHole,"Hole",logicScintillator,false,0);
@@ -215,6 +238,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   //--------------------------------------------------
   // finaliza construccion amortiguador
   //--------------------------------------------------
+
   G4VSolid* solidHole2 = new G4Tubs("Hole",0.0*cm,0.9*mm,fClad2Z+0.75*mm,0.*deg,360.*deg);
   G4LogicalVolume* fLogicHole2 = new G4LogicalVolume(solidHole2,FindMaterial("G4_AIR"),"Hole");
   new G4PVPlacement(0,G4ThreeVector(0.0,0.0,fSciCRTfiberOrigin+0.75*mm),fLogicHole2,"Hole",absLV,false,0);
