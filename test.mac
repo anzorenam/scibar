@@ -10,7 +10,7 @@
 # en el extremo opuesto al MAPMT
 # a 25cm del final de la barra
 # 10 barras (2.5cm*10.0)
-/gps/position 8.75 170 -135 cm
+/gps/position 8.75 195 -135 cm
 /gps/direction 0 -1 0
-/run/beamOn 20000
+/run/beamOn 100000
 

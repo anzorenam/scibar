@@ -10,4 +10,4 @@ Final version of scintillator bar simulation (main code from Rocio Garcia)
 - Reflectance at the WLS end.
 - Attenuation on the fiber corrected.
 - Coating reflectance corrected.
-- Rise time and decay times for PS and WLS.
+- Decay times for PS and WLS.
