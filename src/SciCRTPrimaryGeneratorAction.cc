@@ -1,6 +1,6 @@
 #include "G4ios.hh"
 #include "G4Event.hh"
-#include "G4ParticleGun.hh"
+#include "G4GeneralParticleSource.hh"
 #include "G4Material.hh"
 #include "G4MaterialPropertiesTable.hh"
 #include "G4ParticleTable.hh"
@@ -11,6 +11,7 @@
 
 #include "SciCRTPrimaryGeneratorAction.hh"
 #include "SciCRTDetectorConstruction.hh"
+#include "SciCRTPrimaryGeneratorMessenger.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4AutoLock.hh"
 
@@ -25,18 +26,9 @@ SciCRTPrimaryGeneratorAction::
   fDetector = dc;
   fIntegralTable = NULL;
 
-  char* long_ID=getenv("LONGZ");
-  G4double longz=(float) atoi(G4String(long_ID));
+  fParticleGun = new G4GeneralParticleSource();
 
-  fParticleGun = new G4ParticleGun(1);
-  G4ParticleTable* particleTable=G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* particle=particleTable->FindParticle("opticalphoton");
-  G4ThreeVector momentumDir=G4ThreeVector(0,0,1);
-  G4ThreeVector par_position=G4ThreeVector(8.75*cm,-0.65*cm,longz*cm);
-  fParticleGun->SetParticleDefinition(particle);
-  fParticleGun->SetParticleEnergy(2.91*eV);
-  fParticleGun->SetParticlePosition(par_position);
-  fParticleGun->SetParticleMomentumDirection(momentumDir);
+  fGunMessenger = new SciCRTPrimaryGeneratorMessenger(this);
 
   fTimeConstant = 0.;
 }
@@ -44,6 +36,7 @@ SciCRTPrimaryGeneratorAction::
 SciCRTPrimaryGeneratorAction::~SciCRTPrimaryGeneratorAction()
 {
   delete fParticleGun;
+  delete fGunMessenger;
   if (fIntegralTable) {
      fIntegralTable->clearAndDestroy();
      delete fIntegralTable;
@@ -134,31 +127,13 @@ void SciCRTPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     SetOptPhotonPolar();
     SetOptPhotonTime();
   }
-  char* long_ID=getenv("LONGZ");
-  G4double longz=(float) atoi(G4String(long_ID));
 
-  G4double z=2.0*G4UniformRand()-1.0;
-  G4double randz;
-  if(z>=0){
-    randz=1.0;
-  }else if(z<0){
-    randz=-1.0;
-  }
-
-  G4ParticleTable* particleTable=G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* particle=particleTable->FindParticle("opticalphoton");
-  G4ThreeVector momentumDir=G4ThreeVector(0,0,randz);
-  G4ThreeVector par_position=G4ThreeVector(8.75*cm,-0.65*cm,longz*cm);
-  fParticleGun->SetParticleDefinition(particle);
-  fParticleGun->SetParticleEnergy(2.91*eV);
-  fParticleGun->SetParticlePosition(par_position);
-  fParticleGun->SetParticleMomentumDirection(momentumDir);
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }
 
 void SciCRTPrimaryGeneratorAction::SetOptPhotonPolar()
 {
-  G4double angle = G4UniformRand() * 360.0*deg;
+  G4double angle=G4UniformRand()*360.0*deg;
   SetOptPhotonPolar(angle);
 }
 
@@ -171,19 +146,19 @@ void SciCRTPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
      return;
   }
   G4ThreeVector normal (1., 0., 0.);
-  G4ThreeVector kphoton = fParticleGun->GetParticleMomentumDirection();
-  G4ThreeVector product = normal.cross(kphoton);
-  G4double modul2       = product*product;
-  G4ThreeVector e_perpend (0., 0., 1.);
-  if (modul2 > 0.) e_perpend = (1./std::sqrt(modul2))*product;
-  G4ThreeVector e_paralle    = e_perpend.cross(kphoton);
-  G4ThreeVector polar = std::cos(angle)*e_paralle + std::sin(angle)*e_perpend;
+  G4ThreeVector kphoton=fParticleGun->GetParticleMomentumDirection();
+  G4ThreeVector product=normal.cross(kphoton);
+  G4double modul2=product*product;
+  G4ThreeVector e_perpend(0.,0.,1.);
+  if (modul2 > 0.) e_perpend=(1./std::sqrt(modul2))*product;
+  G4ThreeVector e_paralle=e_perpend.cross(kphoton);
+  G4ThreeVector polar=std::cos(angle)*e_paralle+std::sin(angle)*e_perpend;
   fParticleGun->SetParticlePolarization(polar);
 
 }
 
 void SciCRTPrimaryGeneratorAction::SetOptPhotonTime()
 {
-   G4double time = -std::log(G4UniformRand())*fTimeConstant;
+   G4double time=-std::log(G4UniformRand())*fTimeConstant;
    fParticleGun->SetParticleTime(time);
 }

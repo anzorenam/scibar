@@ -40,7 +40,8 @@ target_link_libraries(scibar ${Geant4_LIBRARIES} )
 # relies on these scripts being in the current working directory.
 #
 set(scibar_SCRIPTS
-    photon.mac
+    test.mac
+    input_spec.dat
     runsim.sh
    )
 

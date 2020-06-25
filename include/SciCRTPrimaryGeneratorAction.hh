@@ -4,18 +4,18 @@
 #ifndef SciCRTPrimaryGeneratorAction_h
 #define SciCRTPrimaryGeneratorAction_h 1
 
-#include <fstream>
 #include "globals.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
 
 #include "G4AffineTransform.hh"
 
-class G4ParticleGun;
+class G4GeneralParticleSource;
 
 class G4Event;
 class G4PhysicsTable;
 
 class SciCRTDetectorConstruction;
+class SciCRTPrimaryGeneratorMessenger;
 
 class SciCRTPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
@@ -44,13 +44,12 @@ class SciCRTPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetOptPhotonTime();
 
     SciCRTDetectorConstruction*   fDetector;
-    G4ParticleGun*   fParticleGun;
+    G4GeneralParticleSource*   fParticleGun;
+    SciCRTPrimaryGeneratorMessenger* fGunMessenger;
 
     static G4bool fFirst;
 
     G4double fTimeConstant;
-    G4String fileName;
-    std::ifstream inFile;
 
 };
 

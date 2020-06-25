@@ -29,9 +29,6 @@ class SciCRTEventAction : public G4UserEventAction
     G4int GetEventNo();
     void SetEventVerbose(G4int);
 
-    void AddEdep(G4double edep) {fTotalEdep += edep;}
-    G4double GetEdep() const    {return fTotalEdep;}
-
   private:
 
     SciCRTRunAction* fRunAction;
@@ -41,8 +38,6 @@ class SciCRTEventAction : public G4UserEventAction
 
     G4int fMPPCCollID;
     G4int fScintCollID;
-    G4double fTotalEdep;
-
 };
 
 #endif

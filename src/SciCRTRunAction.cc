@@ -24,18 +24,20 @@ SciCRTRunAction::SciCRTRunAction()
   analysisManager->SetFirstNtupleId(1);
   analysisManager->CreateNtuple("edep","photons");
   analysisManager->CreateNtupleIColumn("evento");
-  analysisManager->CreateNtupleDColumn("TotEdep");
+  analysisManager->CreateNtupleDColumn("energy");
+  analysisManager->CreateNtupleDColumn("edep");
+  analysisManager->CreateNtupleIColumn("num_all");
   analysisManager->CreateNtupleIColumn("num_pmt");
   analysisManager->FinishNtuple();
 
-  analysisManager->CreateNtuple("time", "time");
+  analysisManager->CreateNtuple("photons","time-waveL");
   analysisManager->CreateNtupleIColumn("evento");
   analysisManager->CreateNtupleIColumn("ID");
-  analysisManager->CreateNtupleDColumn("Time");
+  analysisManager->CreateNtupleDColumn("time");
+  analysisManager->CreateNtupleDColumn("wave");
   analysisManager->FinishNtuple();
 
 }
-
 
 SciCRTRunAction::~SciCRTRunAction()
 {
@@ -49,7 +51,8 @@ void SciCRTRunAction::BeginOfRunAction(const G4Run* aRun)
 
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
   G4RunManager::GetRunManager()->SetRandomNumberStoreDir("random/");
-  char* long_ID=getenv("LONGZ");
+  char* seed_ID=getenv("SEED");
+  G4int wID=G4Threading::G4GetThreadId();
 
   if (fAutoSeed) {
      G4cout << "*******************" << G4endl;
@@ -62,15 +65,22 @@ void SciCRTRunAction::BeginOfRunAction(const G4Run* aRun)
      G4Random::setTheSeeds(seeds);
      G4Random::showEngineStatus();
   } else {
+    if(seed_ID != NULL){
+      long seed=atoi(G4String(seed_ID));
+      if(wID!=-1){
+        G4Random::setTheSeed(seed+wID);
+      } else{
+        G4Random::setTheSeed(seed);
+      }
+    }
      G4Random::showEngineStatus();
   }
 
   if (fSaveRndm > 0) G4Random::saveEngineStatus("BeginOfRun.rndm");
-
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-  G4String lID;
-  lID=G4String(long_ID);
-  G4String fileName = "scibar"+lID;
+  G4String fID;
+  fID=G4String(seed_ID);
+  G4String fileName="scibar"+fID;
   analysisManager->OpenFile(fileName);
 }
 

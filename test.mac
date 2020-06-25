@@ -1,0 +1,16 @@
+/run/initialize
+
+# distribucion de energia
+/gps/particle mu-
+/gps/ene/type Arb
+/gps/hist/file input_spec.dat
+/gps/hist/inter Lin
+
+# liberado al tope del SciCRT
+# en el extremo opuesto al MAPMT
+# a 25cm del final de la barra
+# 10 barras (2.5cm*10.0)
+/gps/position 8.75 195 -135 cm
+/gps/direction 0 -1 0
+/run/beamOn 100000
+

@@ -15,6 +15,7 @@ SciCRTMaterials::~SciCRTMaterials()
   delete fPethylene;
   delete fFPethylene;
   delete fPolystyrene;
+  delete fPolystyrene2;
   delete fSilicone;
 }
 
@@ -130,6 +131,23 @@ void SciCRTMaterials::CreateMaterials()
   natoms.clear();
 
   //--------------------------------------------------
+  // Polystyrene absorber
+  //--------------------------------------------------
+
+  elements.push_back("C");     natoms.push_back(8);
+  elements.push_back("H");     natoms.push_back(8);
+
+  //density = 1.050*g/cm3;
+  //de medina-tanco
+  density = 1.080*g/cm3;
+
+  fPolystyrene2= fNistMan->
+          ConstructNewMaterial("Polys2", elements, natoms, density);
+
+  elements.clear();
+  natoms.clear();
+
+  //--------------------------------------------------
   // Silicone (Template for Optical Grease)
   //--------------------------------------------------
 
@@ -172,16 +190,64 @@ void SciCRTMaterials::CreateMaterials()
   //
 
   const G4int Ne=400;
-  G4double pEn[Ne];
+  G4double pEn[Ne],rIndA[Ne],rIndFb[Ne],rIndC1[Ne],rIndC2[Ne];
+  G4double emiPS[Ne],emiFb[Ne],absFb[Ne],absWLS[Ne],rIndG[Ne];
+  G4double absGl[Ne],rIndSi[Ne],absSi[Ne],rIndPS[Ne],absPS[Ne];
+
+  G4String filename="optical/scibar_optics0.csv";
+  std::ifstream data_file;
+  data_file.open(filename);
+  if(!data_file) {
+    G4cout << "File open error "<< G4endl;
+  }
+  else{
+    for(int k=0;k<15;k++){
+      for(int j=0;j<Ne;j++){
+          if(k==0){
+            data_file>>pEn[j];
+          } else if(k==1){
+            data_file>>rIndFb[j];
+          } else if(k==2){
+            data_file>>rIndC1[j];
+          } else if(k==3){
+            data_file>>rIndC2[j];
+          } else if(k==4){
+            data_file>>emiPS[j];
+          } else if(k==5){
+            data_file>>emiFb[j];
+          } else if(k==6){
+            data_file>>absFb[j];
+          } else if(k==7){
+            data_file>>absWLS[j];
+          } else if(k==8){
+            rIndA[j]=1.0;
+          } else if(k==9){
+            rIndG[j]=1.49;
+          } else if(k==10){
+            absGl[j]=420.*cm;
+          } else if(k==11){
+            rIndSi[j]=1.46;
+          } else if(k==12){
+            absSi[j]=20.0*m;
+          } else if(k==13){
+            rIndPS[j]=1.58;
+          } else if(k==14){
+            absPS[j]=250.*cm;
+          }
+      }
+    }
+  }
+  data_file.close();
+  for(int j=0;j<Ne;j++){
+    pEn[j]*=eV;
+    absFb[j]*=m;
+    absWLS[j]*=mm;
+  }
 
   //--------------------------------------------------
   // Air
   //--------------------------------------------------
 
-  G4double rIndA[Ne];
-  for (int j=0;j<Ne;j++){
-    rIndA[j]=1.0;
-  }
   G4MaterialPropertiesTable* mpt=new G4MaterialPropertiesTable();
   mpt->AddProperty("RINDEX",pEn,rIndA,Ne);
   fAir->SetMaterialPropertiesTable(mpt);
@@ -190,146 +256,65 @@ void SciCRTMaterials::CreateMaterials()
   //  Polyethylene(nucleo)
   //--------------------------------------------------
 
-  G4double rIndFb[Ne];
-  std::ifstream data_file;
-  sprintf(filename,"single-charge-dist.csv");
-  data_file.open(filename);
-  if(!data_file) {
-    printf("file open error \n");
-  }
-  else{
-    for(int j=0;j<Ne;j++){
-        data_file>>rIndFb[j];
-      }
-  }
-  data_file.close();
-
-  G4double absSciCRTfiber[] =
-  {1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm,
-   1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm, 1.*mm,
-   0.14*m,0.595*m,1.47*m,2.625*m,2.975*m,2.905*m,2.66*m,2.695*m,3.15*m,3.4*m,
-   3.3*m,2.8*m,2.45*m,2.1*m,2.03*m,1.89*m,1.61*m,1.505*m,1.19*m,1.05*m,0.7*m,
-   0.56*m,0.455*m, 0.28*m,0.21*m,0.14*m,0.105*m,0.07*m,0.035*m,0.035*m};
-
-  G4double emiFb[Ne]; // archivo
-
   G4MaterialPropertiesTable* mptSciCRTfiber=new G4MaterialPropertiesTable();
   mptSciCRTfiber->AddProperty("RINDEX",pEn,rIndFb,Ne);
-  mptSciCRTfiber->AddProperty("WLSABSLENGTH",pEn,absSciCRTfiber,Ne);
-  mptSciCRTfiber->AddProperty("WLSCOMPONENT",pEn,emissionFib,Ne);
+  mptSciCRTfiber->AddProperty("ABSLENGTH",pEn,absFb,Ne);
+  mptSciCRTfiber->AddProperty("WLSABSLENGTH",pEn,absWLS,Ne);
+  mptSciCRTfiber->AddProperty("WLSCOMPONENT",pEn,emiFb,Ne);
   //PENDIENTE de 0.5ns a 10ns por knoll y Super-IFR ...
-  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT", 10.*ns);
+  //12ns valor medido por experimento rusp
+  mptSciCRTfiber->AddConstProperty("WLSTIMECONSTANT",12.0*ns);
   fPethylene->SetMaterialPropertiesTable(mptSciCRTfiber);
 
   //--------------------------------------------------
   //  PMMA primer revestimiento-interno
   //--------------------------------------------------
 
-  G4double  rIndC1[Ne]; //archivo
-  G4double absClad[] =
-  {20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-   20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-   20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-   20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,
-   20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m,20.0*m};
-
   G4MaterialPropertiesTable* mptClad1=new G4MaterialPropertiesTable();
   mptClad1->AddProperty("RINDEX",pEn,rIndC1,Ne);
-  mptClad1->AddProperty("ABSLENGTH",pEn,absClad,Ne);
+  mptClad1->AddProperty("ABSLENGTH",pEn,absFb,Ne); // falta
   fPMMA->SetMaterialPropertiesTable(mptClad1);
 
   //--------------------------------------------------
   // Fluorinated Polyethylene segundo revestimeinto-externo
   //--------------------------------------------------
 
-   G4double refractiveIndexClad2[] =
-   { 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42,
-     1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42,
-     1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42,
-     1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42,
-     1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42, 1.42};
-
-   assert(sizeof(refractiveIndexClad2) == sizeof(pEn));
-
-  // Add entries into properties table
   G4MaterialPropertiesTable* mptClad2 = new G4MaterialPropertiesTable();
-  mptClad2->AddProperty("RINDEX",pEn,refractiveIndexClad2,Ne);
-  mptClad2->AddProperty("ABSLENGTH",pEn,absClad,Ne);
-
+  mptClad2->AddProperty("RINDEX",pEn,rIndC2,Ne);
+  mptClad2->AddProperty("ABSLENGTH",pEn,absFb,Ne);
   fFPethylene->SetMaterialPropertiesTable(mptClad2);
+
   //--------------------------------------------------
   // Glass
   //este material lo saque del proyecto LXe
   //--------------------------------------------------
   //Por lo tanto los parametros son los recomendados
-  G4double glass_RIND[]={ 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49,
-    1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49,
-    1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49,
-    1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49,
-    1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49, 1.49};
-  assert(sizeof(glass_RIND) == sizeof(pEn));
-  G4double glass_AbsLength[]={420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,
-	  420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,
-	  420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,
-	  420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,
-	  420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,420.*cm,};
-  assert(sizeof(glass_AbsLength) == sizeof(pEn));
+
   G4MaterialPropertiesTable *glass_mt = new G4MaterialPropertiesTable();
-  glass_mt->AddProperty("ABSLENGTH",pEn,glass_AbsLength,Ne);
-  glass_mt->AddProperty("RINDEX",pEn,glass_RIND,Ne);
+  glass_mt->AddProperty("ABSLENGTH",pEn,absGl,Ne);
+  glass_mt->AddProperty("RINDEX",pEn,rIndG,Ne);
   fGlass->SetMaterialPropertiesTable(glass_mt);
 
   //--------------------------------------------------
   // Silicone
   //--------------------------------------------------
 
-   G4double refractiveIndexSilicone[] =
-   { 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46,
-     1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46, 1.46};
-
-   assert(sizeof(refractiveIndexSilicone) == sizeof(pEn));
-
-  // Add entries into properties table
   G4MaterialPropertiesTable* mptSilicone = new G4MaterialPropertiesTable();
-  mptSilicone->
-           AddProperty("RINDEX",pEn,refractiveIndexSilicone,Ne);
-  mptSilicone->AddProperty("ABSLENGTH",pEn,absClad,Ne);
-
+  mptSilicone->AddProperty("RINDEX",pEn,rIndSi,Ne);
+  mptSilicone->AddProperty("ABSLENGTH",pEn,absSi,Ne);
   fSilicone->SetMaterialPropertiesTable(mptSilicone);
-
 
   //--------------------------------------------------
   //  Polystyrene, plástico centellador
   //--------------------------------------------------
 
-  G4double rIndPS[]=
-  { 1.58  , 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58  , 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58  , 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58  , 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58  , 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58};
-
-  assert(sizeof(refractiveIndexPS) == sizeof(pEn));
-
-  G4double absPS[]=
-  //25.4 ver en la vitacora --250
-
-  assert(sizeof(absPS)==sizeof(pEn));
-
-  G4double emiPS[]=
-
-  assert(sizeof(scintilFast)==sizeof(pEn));
   G4MaterialPropertiesTable* mptPolystyrene=new G4MaterialPropertiesTable();
   mptPolystyrene->AddProperty("RINDEX",pEn,rIndPS,Ne);
   mptPolystyrene->AddProperty("ABSLENGTH",pEn,absPS,Ne);
   mptPolystyrene->AddProperty("FASTCOMPONENT",pEn,emiPS,Ne);
-  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",9./keV);
+  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",8./keV);
   mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
-  mptPolystyrene->AddConstProperty("FASTTIMECONSTANT", 3.6*ns);
-
+  mptPolystyrene->AddConstProperty("FASTTIMECONSTANT",3.6*ns);
   fPolystyrene->SetMaterialPropertiesTable(mptPolystyrene);
   fPolystyrene->GetIonisation()->SetBirksConstant(0.208*mm/MeV);
 
