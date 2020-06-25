@@ -121,6 +121,8 @@ void SciCRTEventAction::EndOfEventAction(const G4Event* evt)
 			G4cout<<"No hay hits en el centellador en este evento."<<G4endl;
 		}
 		G4double energy_out=TotE/MeV;
+                analysisManager->FillNtupleIColumn(1,0,evento);
+                analysisManager->FillNtupleDColumn(1,1,energy);
 		analysisManager->FillNtupleDColumn(1,2,energy_out);
 	  analysisManager->AddNtupleRow(1);
 	 }

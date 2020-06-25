@@ -134,7 +134,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
         } else if(k==1){
           eTiO2[j]=0;
         } else if(k==2){
-          rMi[j]=0.5;
+          rMi[j]=0.54;
         } else if(k==3){
           eMi[j]=0;
         } else if(k==4){
@@ -184,7 +184,7 @@ G4VPhysicalVolume* SciCRTDetectorConstruction::ConstructDetector()
   //(xx,yy+20*cm,zz)
   //new G4PVPlacement(0,G4ThreeVector(),logicExtrusion2,"Extrusion",logic_env,false,0);
   new G4LogicalSkinSurface("TiO2Surface",logicExtrusion2,TiO2Surface);
-  new G4PVReplica("Extr",logicExtrusion2,logic_env,kYAxis,126,1.3*cm,0);
+  new G4PVReplica("Extr",logicExtrusion2,logic_env,kYAxis,127,1.3*cm,0);
 
   //--------------------------------------------------
   // Scintillator
