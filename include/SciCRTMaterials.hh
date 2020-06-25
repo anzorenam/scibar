@@ -33,7 +33,7 @@ class SciCRTMaterials
     G4Material*        fAir;
     G4Material*        fAl;
     G4Material*        fGlass;
-    G4Material*        facero_mat;
+
     G4Material*        fPMMA;
     G4Material*        fPethylene;
     G4Material*        fFPethylene;
